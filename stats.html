@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>연간 통계</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 30px auto; padding: 0 16px; }
+    nav a { margin-right: 12px; }
+    .row { display: flex; align-items: center; margin: 6px 0; }
+    .label { width: 40px; }
+    .bar { background: #4a90e2; height: 20px; margin-right: 8px; }
+  </style>
+</head>
+<body>
+  <nav><a href="index.html">월별 조회</a><a href="stats.html">연간 통계</a></nav>
+  <h1>📊월별 공휴일 개수</h1>
+  <input id="year" type="number" value="2026">년
+  <button onclick="draw()">조회</button>
+  <div id="chart"></div>
+
+  <script src="app.js"></script>
+  <script>
+    async function draw() {
+      const chart = document.getElementById("chart");
+      chart.innerHTML = "불러오는 중...";
+      try {
+        const list = await getHolidays(year.value);
+        const counts = Array(12).fill(0);
+        list.forEach(h => counts[Number(String(h.locdate).slice(4, 6)) - 1]++);
+        chart.innerHTML = counts.map((c, i) =>
+          `<div class="row"><span class="label">${i + 1}월</span>
+           <div class="bar" style="width:${c * 40}px"></div>${c}개</div>`
+        ).join("");
+      } catch (e) {
+        chart.innerHTML = "오류: " + e.message;
+      }
+    }
+  </script>
+</body>
+</html>
